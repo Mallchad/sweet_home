@@ -526,18 +526,22 @@ awful.rules.rules = {
      properties = { floating = true }
    },
    -- Fix plasmashell widgets filling the screen
-   -- { rule = {class = "plasmashe"},
-   --   properties = {
-   --   floating = true,
-   --   width = 20,
+   { rule = {class = "plasmashell"},
+     properties = {
+        floating = true,
+        --   width = 20,
    --   height = 20
-   --   }
-   -- },
+     }
+   },
    -- Add titlebars to normal clients and dialogs
    { rule_any = {type = { "normal", "dialog" }
                 }, properties = { titlebars_enabled = true }
    },
    -- App Specific Rules
+   {
+      rule = { class = "krita" },
+      properties = {titlebars_enabled = true}
+   },
    {
       rule = { class = "dolphin"},
       properties = {opacity = 0.95}
