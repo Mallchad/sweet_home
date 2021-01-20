@@ -57,16 +57,16 @@ editor_cmd = terminal .. " -e " .. editor
 -- If you do not like this or do not have such a key,
 -- I suggest you to remap Mod4 to another key using xmodmap or other tools.
 -- However, you can use another modifier like Mod1, but it may interact with others.
-local modkey = "Mod4"
-local super_l = "Mod4"
 local alt_l = "Mod1"
-local hyper_l = "Mod3"
+local hyper_l = "Mod5"
+local meta_l = "Mod3"
+local super_l = "Mod4"
+local modkey = super_l
 local rofi_global_args = " -show-icons -width 30 ";
 local rofi_drun_command = "rofi"..rofi_global_args.. "-show drun";
 
 -- Startup
-awful.spawn("/home/mallchad/.config/mallchad/xorg-post-start");
-
+awful.spawn("/home/mallchad/.config/mallchad/xorg-start-hook.lua");
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts =
    {
