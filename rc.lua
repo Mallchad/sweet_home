@@ -58,8 +58,8 @@ editor_cmd = terminal .. " -e " .. editor
 -- I suggest you to remap Mod4 to another key using xmodmap or other tools.
 -- However, you can use another modifier like Mod1, but it may interact with others.
 local alt_l = "Mod1"
-local hyper_l = "Mod5"
-local meta_l = "Mod3"
+-- local hyper_l = "Mod5"
+-- local meta_l = "Mod3"
 local super_l = "Mod4"
 local modkey = super_l
 local rofi_global_args = " -show-icons -width 30 ";
@@ -80,10 +80,11 @@ local tdrop =
    {
       global_args = "-m",
       floating_args = "-ma -w 100% -h 100%",
+      terminal_command = "tdrop --monitor-aware --pointer-monitor-detection alacritty";
+
    }
 local function tdrop_terminal()
-   local terminal_command = "tdrop alacritty";
-   awful.spawn(terminal_command);
+   awful.spawn(tdrop.terminal_command);
 end
 -- Create a lambda for a command to be called on the terminal and returns it
 function terminal_call(command)
