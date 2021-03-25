@@ -526,14 +526,6 @@ awful.rules.rules = {
    { rule = { class = "*.exe" },
      properties = { floating = true }
    },
-   -- Fix plasmashell widgets filling the screen
-   { rule = {class = "plasmashell"},
-     properties = {
-        floating = true,
-        --   width = 20,
-   --   height = 20
-     }
-   },
    -- Add titlebars to normal clients and dialogs
    { rule_any = {type = { "normal", "dialog" }
                 }, properties = { titlebars_enabled = true }
@@ -556,6 +548,19 @@ awful.rules.rules = {
    -- { rule = { class = "Firefox" },
    --   properties = { screen = 1, tag = "2" } },
 }
+-- Delayed Start Rules
+gears.timer.start_new(10,
+function ()
+     -- Fix plasmashell widgets filling the screen
+   awful.rules.rules[#awful.rules.rules + 1] = {
+      rule = {class = "plasmashell"},
+      properties = {
+         floating = true,
+         tags = root.tags(),
+      }
+   }
+   return false
+end)
 -- }}}
 
 -- {{{ Signals
