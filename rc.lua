@@ -557,6 +557,23 @@ awful.rules.rules = {
    --   properties = { screen = 1, tag = "2" } },
 }
 -- }}}
+--[[
+   * Delayed Start Rules
+   * FIXME Filthy Hack to make plasmashell play nicer
+   * This restarts plasmashell so it functions ok-ish especially on multi-monitor setups
+   * This may cause a race condition since the timer is hardcoded so this should be
+   * looked into if the obviously fragile hack is to persist in this code
+   -- ]]
+awful.spawn("pkill plasmashell")
+gears.timer.start_new(5,
+                      function ()
+                         awful.spawn("plasmashell")
+                         -- Reapply All Rules and pray to god it works ok
+                         for _,r_client in ipairs(client.get()) do
+                            rules.apply(r_client);
+                         end
+                         return false
+end)
 
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
