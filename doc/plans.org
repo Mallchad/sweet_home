@@ -1,0 +1,13 @@
+* Priority
+** TODO Clean up this document and be more descriptive
+** TODO Change moving clients to unreachable tags to use respective tags
+The point of this is so if a tag is on tag 3, for example, when it is
+moved from an unreachable tag, it should stay on tag 3.
+
+
+* Backburner
+** TODO See if it is possible to place plasmashell windows properly for multi-monitor
+This may be possible by extracting primitive information like window dimensions
+and checking it against similar windows on this current screen.
+
+This could be reapplied when the window setup changes
