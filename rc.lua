@@ -545,23 +545,17 @@ awful.rules.rules = {
          {  maximized_horizontal = true,
             opacity = 0.95}
    },
+   {
+      rule = {class = "plasmashell"},
+      properties = {
+         tags = root.tags(),
+         -- Prevent plasmashell widgets filling the screen
+         floating = true,
+      }}
    -- Set Firefox to always map on the tag named "2" on screen 1.
    -- { rule = { class = "Firefox" },
    --   properties = { screen = 1, tag = "2" } },
 }
--- Delayed Start Rules
-gears.timer.start_new(10,
-function ()
-     -- Fix plasmashell widgets filling the screen
-   awful.rules.rules[#awful.rules.rules + 1] = {
-      rule = {class = "plasmashell"},
-      properties = {
-         floating = true,
-         tags = root.tags(),
-      }
-   }
-   return false
-end)
 -- }}}
 
 -- {{{ Signals
