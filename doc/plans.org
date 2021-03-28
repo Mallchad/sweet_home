@@ -4,6 +4,11 @@
 The point of this is so if a tag is on tag 3, for example, when it is
 moved from an unreachable tag, it should stay on tag 3.
 
+** TODO Add a binding to switch tags for both screens at once
+It turns out individual tags isn't nearly as useful and is more annoying than anything
+Ideally a better solution would be to add a keybind to place a window on multiple
+(or all) tags for a given screen, as oppose to trying to manage tags individually,
+for every single screen.
 
 * Backburner
 ** TODO See if it is possible to place plasmashell windows properly for multi-monitor
