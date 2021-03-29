@@ -224,17 +224,32 @@ awful.screen.connect_for_each_screen(function(s)
                        gap                = 0,
                        screen             = s,
       })
-      awful.tag.add("Browser", {
-                               -- icon = "/path/to/icon2.png",
-                       layout = awful.layout.suit.tile,
-                       screen = s,
-      })
       awful.tag.add("System", {
                        -- icon = "/path/to/icon2.png",
                        layout = awful.layout.suit.tile,
                        screen = s,
       })
+      awful.tag.add("Browser", {
+                       -- icon = "/path/to/icon2.png",
+                       layout = awful.layout.suit.tile,
+                       screen = s,
+      })
       awful.tag.add("Social", {
+                       -- icon = "/path/to/icon2.png",
+                       layout = awful.layout.suit.tile,
+                       screen = s,
+      })
+      awful.tag.add("Other", {
+                       -- icon = "/path/to/icon2.png",
+                       layout = awful.layout.suit.tile,
+                       screen = s,
+      })
+      awful.tag.add("Other 2", {
+                       -- icon = "/path/to/icon2.png",
+                       layout = awful.layout.suit.tile,
+                       screen = s,
+      })
+      awful.tag.add("Graphically Intensive 2", {
                        -- icon = "/path/to/icon2.png",
                        layout = awful.layout.suit.tile,
                        screen = s,
