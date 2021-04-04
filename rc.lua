@@ -76,6 +76,23 @@ awful.layout.layouts =
       -- awful.layout.suit.spiral.dwindle
    }
 -- }}}
+-- Utility Functions
+local debug = {
+   loud_fail = false
+}
+-- @param failure_description a string describing what happned with the failiure
+function debug.silent_fail(failiure_description)
+   asset(type(failiure_description == "string"),
+         "'failiure_description is not of type string")
+   local self = debug
+   if self.loud_fail == true then
+      local fail_notification = {}
+      fail_notification.preset = naughty.config.presets.critical
+      fail_notification.title = "A Silent Failiure Has Occured"
+      fail_notification.text = failiure_description
+      naughty.notify(fail_notification)
+   end
+end
 local keysym = {
    prtsc = "#107"
 }
@@ -92,6 +109,7 @@ function flameshot:flameshot()
    self.screen_command = "flameshot screen --clipboard --path "..self.screenshot_folder
    if (gears.filesystem.is_dir(self.screenshot_folder) == false) then
       self.screenshot_folder = nil
+      debug.silent_fail("'screenshot_folder' directory could not be found")
    end
    if not self.screenshot_folder then
       self.gui_command = "flameshot gui --clipboard"
