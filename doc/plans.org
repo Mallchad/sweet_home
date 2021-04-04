@@ -1,5 +1,20 @@
 * Priority
-** TODO Clean up this document and be more descriptive
+** TODO [#A]Clean up this document and be more descriptive
+** TODO Add a logging mechanism for silent_fail
+Along with this there should a keybind of some kind to restart awesome with
+loud fail enabled.
+
+The purpose of ~loud_fail~ would be to make silent_fail more verbose
+
+Also this needs a keybind or similar mechanism to enable and disable
+~loud_fail~
+
+** TODO Create a rofi keybind to switch betwen windows
+The purpose of this is to make it easier to find windows when many are open.
+The appropriate keybind for this is not clear yet but modkey-p is an attractive
+option.
+As is modkey-TAB.
+
 ** TODO Change moving clients to unreachable tags to use respective tags
 The point of this is so if a tag is on tag 3, for example, when it is
 moved from an unreachable tag, it should stay on tag 3.
@@ -11,6 +26,11 @@ Ideally a better solution would be to add a keybind to place a window on multipl
 for every single screen.
 
 * Backburner
+** TODO Add playerctl bindings
+These will be keybinds to invoke playerctl, a music player control mechanism.
+The most important commands to bind will be, play/pause, previous track, next-track,
+volume up, volume down, and at a stretch, showing metadata.
+
 ** TODO See if it is possible to place plasmashell windows properly for multi-monitor
 This may be possible by extracting primitive information like window dimensions
 and checking it against similar windows on this current screen.

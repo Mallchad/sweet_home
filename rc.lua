@@ -85,12 +85,25 @@ local tdrop =
       floating_args = "-ma -w 100% -h 100%",
       terminal_command = "tdrop --monitor-aware --pointer-monitor-detection alacritty";
    }
-local flameshot = {
-   gui_command = "flameshot gui",
-
-}
-function flameshot:invoke_gui ()
+local flameshot = {}
+function flameshot:flameshot()
+   self.screenshot_folder = os.getenv("HOME").."/pictures/screenshots"
+   self.gui_command = "flameshot gui  --path "..self.screenshot_folder
+   self.screen_command = "flameshot screen --clipboard --path "..self.screenshot_folder
+   if (gears.filesystem.is_dir(self.screenshot_folder) == false) then
+      self.screenshot_folder = nil
+   end
+   if not self.screenshot_folder then
+      self.gui_command = "flameshot gui --clipboard"
+      self.screen_command = "flameshot screen --clipboard"
+   end
+end
+flameshot:flameshot()
+function flameshot:invoke_gui()
    awful.spawn(flameshot.gui_command)
+end
+function flameshot:invoke_screen()
+   awful.spawn(flameshot.screen_command)
 end
 local function tdrop_terminal()
    awful.spawn(tdrop.terminal_command);
@@ -325,6 +338,8 @@ globalkeys = gears.table.join(
       {description = "quit awesome", group = "awesome"}),
    awful.key({"Shift"}, keysym.prtsc, flameshot.invoke_gui,
       {description = "open screenshot editor"}),
+   awful.key({}, keysym.prtsc, flameshot.invoke_screen,
+      {description = "take screenshot of current screen"}),
    -- Window Management
    awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)          end,
       {description = "decrease master width factor", group = "layout"}),
