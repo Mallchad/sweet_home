@@ -62,8 +62,8 @@ local alt_l = "Mod1"
 -- local meta_l = "Mod3"
 local super_l = "Mod4"
 local modkey = super_l
-local rofi_global_args = " -show-icons -width 30 ";
-local rofi_drun_command = "rofi"..rofi_global_args.. "-show drun";
+local rofi_global_args = "-show-icons -width 30 -font 'MesloLGS NF 16'";
+local rofi_drun_command = "rofi "..rofi_global_args.." -show drun";
 
 -- Startup
 awful.spawn("/home/mallchad/.config/mallchad/xorg-start-hook.lua");
