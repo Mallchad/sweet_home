@@ -26,6 +26,10 @@ Ideally a better solution would be to add a keybind to place a window on multipl
 for every single screen.
 
 * Backburner
+** TODO Add a mechanism for "focus stealing grace"
+The concept behind this is that if you initiate a specific action,
+like switching tags,
+
 ** TODO Add playerctl bindings
 These will be keybinds to invoke playerctl, a music player control mechanism.
 The most important commands to bind will be, play/pause, previous track, next-track,
@@ -36,3 +40,9 @@ This may be possible by extracting primitive information like window dimensions
 and checking it against similar windows on this current screen.
 
 This could be reapplied when the window setup changes
+** TODO create a tag state lock
+The premise behind this is to read various states, like multiple
+tags being active on one, and resuming that state when you return
+to that tag
+This would create a more dynamic way of managing windows that is
+also semi-persistent
