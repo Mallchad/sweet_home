@@ -82,7 +82,7 @@ local debug = {
 }
 -- @param failure_description a string describing what happned with the failiure
 function debug.silent_fail(failiure_description)
-   asset(type(failiure_description == "string"),
+   assert(type(failiure_description == "string"),
          "'failiure_description is not of type string")
    local self = debug
    if self.loud_fail == true then
