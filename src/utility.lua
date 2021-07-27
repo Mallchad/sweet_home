@@ -65,7 +65,7 @@ function utility.build_cmd(...)
 end
 --- Create a lambda for a command to be called on the terminal and returns it
 function utility.terminal_call(command)
-   return function () awful.spawn(command) end
+   return function () awful.spawn.easy_async(command,function() end) end
 end
 --- Create a lambda to call a command with a shell
 function utility.shell_call(command)
@@ -87,5 +87,13 @@ function utility.terminal_callback(command)
    end
    return callback
 end
-
+function utility.hide_client_callback(sig_client)
+   if sig_client.metadata.auto_hide == true then
+      sig_client.minimized = true
+   end
+   -- Report that we successfully auto-hid at least one client
+   -- also try to clean up if the client is minimized without unfocus
+   _G.database.tdrop_terminal_main_auto_hide = false
+   sig_client.metadata.auto_hide = false
+end
 return utility

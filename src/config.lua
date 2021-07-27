@@ -4,8 +4,10 @@ _G.awesome = _G.awesome
 _G.root = _G.root
 _G.client = _G.client
 -- Load Awesome Libraries
-local gears = require("gears")
-local awful = require("awful")
+local gears     = require("gears")
+local gtable    = require("gears.table")
+local awful     = require("awful")
+local screen    = require("awful.screen")
 require("awful.autofocus")
 -- Widget and layout library
 local wibox = require("wibox")
@@ -20,7 +22,8 @@ require("awful/hotkeys_popup/keys")
 
 -- User Defined Libraries
 local utility = require("src/utility")
-local dat = require("src/database")
+_G.database = require("src/database")
+local dat = _G.database
 local debug = require("src/debug")
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts =
@@ -66,8 +69,9 @@ end
 function flameshot:invoke_screen()
    awful.spawn(dat.flameshot_screencap_command)
 end
-local function tdrop_terminal()
-   awful.spawn(dat.screencapterminal_command);
+local function tdrop_terminal_volatile()
+   utility.terminal_call(dat.tdrop_terminal_volatile_command)()
+   _G.database.tdrop_terminal_main_auto_hide = true
 end
 -- Create a launcher widget and a main menu
 local myawesomemenu = {
@@ -139,10 +143,6 @@ root.buttons(gears.table.join(
 local globalkeys = gears.table.join(
    awful.key({ dat.modkey,           }, "s",      hotkeys_popup.show_help,
       {description="show help", group="awesome"}),
-   awful.key({ dat.modkey,           }, "q",   awful.tag.viewprev,
-      {description = "view previous", group = "tag"}),
-   awful.key({ dat.modkey,           }, "e",  awful.tag.viewnext,
-      {description = "view next", group = "tag"}),
    awful.key({ dat.modkey,           }, "Escape", awful.tag.history.restore,
       {description = "go back", group = "tag"}),
    awful.key({ dat.modkey,           }, "j",
@@ -183,6 +183,8 @@ local globalkeys = gears.table.join(
    awful.key({ dat.modkey}, "Return",
       utility.terminal_call(dat.tdrop_terminal_main_command),
       {description = "open a terminal", group = "launcher"}),
+   awful.key({ dat.modkey, "Shift" }, "Return", tdrop_terminal_volatile,
+      {description = "open an auto-closing terminal", group = "launcher"}),
    awful.key({ dat.modkey, "Control" }, "r", awesome.restart,
       {description = "reload awesome", group = "awesome"}),
    awful.key({ dat.modkey, "Shift"   }, "q", awesome.quit,
@@ -213,15 +215,6 @@ local globalkeys = gears.table.join(
          end
       end,
       {description = "restore minimized", group = "client"}),
-   -- Prompt
-   awful.key({ dat.modkey }, "r", function () awful.spawn(dat.tdrop_terminal_main_command) end,
-      {description = "run prompt", group = "launcher"}),
-
-   awful.key({ dat.modkey }, "x",
-      function ()
-         -- TODO placeholder for a volatile command prompt
-      end,
-      {description = "lua execute prompt", group = "awesome"}),
    -- Menubar
    awful.key({ dat.modkey }, "p", function() awful.spawn(dat.rofi_drun_command) end,
       {description = "show rofi desktop menu", group = "launcher"}),
@@ -496,33 +489,47 @@ awful.rules.rules = {
 }
 -- Signals
 -- Signal function to execute when a new client appears.
-local function my_client_connect_signal(c)
+function new_client_setup(new_client)
+   -- Apply some default variables metadata
+   new_client.metadata = {}
    -- Set the windows at the slave,
    -- i.e. put it at the end of others instead of setting it master.
    -- if not awesome.startup then awful.client.setslave(c) end
    if awesome.startup
-      and not c.size_hints.user_position
-      and not c.size_hints.program_position then
+      and not new_client.size_hints.user_position
+      and not new_client.size_hints.program_position then
       -- Prevent clients from being unreachable after screen count changes.
-      awful.placement.no_offscreen(c)
+      awful.placement.no_offscreen(new_client)
    end
-   awful.titlebar.hide(c);
+   awful.titlebar.hide(new_client);
+   if new_client.name == dat.tdrop_terminal_main_wm_name then
+      -- A volatile terminal has been connected
+      if _G.database.tdrop_terminal_main_auto_hide == true then
+         new_client.metadata.auto_hide = true
+      else
+         new_client.metadata.auto_hide = false
+      end
+      if new_client.metadata.auto_hide_signal_connected == nil then
+         new_client.metadata.auto_hide_signal_connected = true
+         new_client:connect_signal("unfocus", utility.hide_client_callback)
+      end
+   end
 end
-client.connect_signal("manage", my_client_connect_signal)
-_G.flash_timer = 1          -- stub global
+function focused_client_setup(focused_client)
+   if focused_client.metadata == nil then
+      focused_client.metadata = {}
+   end
+   if focused_client.name == dat.tdrop_terminal_main_wm_name and
+      _G.database.tdrop_terminal_main_auto_hide == true then
+      -- A volatile terminal has been connected
+      focused_client.metadata.auto_hide = true
+   end
+end
+client.connect_signal("manage", new_client_setup)
+client.connect_signal("focus", focused_client_setup)
 -- Aggressive rule templates
-local function set_tags_all(client)
-   -- client.set_tags
-end
--- Custom Event Loop
---  Run in tandem with awesome's own event loop
-local function tick()
-
-end
-awesome.connect_signal("refresh", tick)
--- | Final Startup Setup |
-
 -- Switch to viewing accessible tags
+-- | Final Startup Setup |
 awful.screen.connect_for_each_screen(function (x_screen)
       local first_tag = x_screen.tags[1]
       if first_tag then

@@ -15,8 +15,11 @@ local database =
       terminal = nil,
       editor = nil,
       editor_command = nil,
+      tdrop_terminal_main_wm_name = nil,
       tdrop_floating_args = nil,
-      tdrop_terminal_command = nil,
+      tdrop_terminal_main_command = nil,
+      tdrop_terminal_volatile_command = nil,
+      tdrop_terminal_main_auto_hide = nil,
       rofi_global_args = nil,
       rofi_drun_command = nil,
       flameshot_folder = nil,
@@ -28,6 +31,7 @@ local database =
       notification_font_name = nil,
       notification_font_size = nil,
       notification_font = nil,
+      cache = {},
       focus_blacklist = {},
       autostart_list = {},
       tick_functions = {},
@@ -51,9 +55,21 @@ function database:new()
    self.terminal = os.getenv("TERMINAL") or "alacritty"
    self.editor = os.getenv("EDITOR") or "vim"
    self.editor_command = self.terminal.." -e "..self.editor
-   self.tdrop_floating_args = "--monitor-aware --auto-detect-wm --width 100% --height 100% --pointer-monitor-detection"
-   self.tdrop_tiling_args = "--monitor-aware --pointer-monitor-detection"
-   self.tdrop_terminal_main_command = util.build_cmd("tdrop", self.tdrop_tiling_args, self.terminal)
+   self.tdrop_terminal_main_wm_name = "tdrop_main_"..self.terminal
+   -- '--monitor-aware'  - allows for setting attributes as a percentage of monitor stats
+   -- '--auto-detect-wm' - allows for neccecary admin to set custom window properties
+   -- '--pointer-aware'  - to place the terminal on the current monitor
+   -- '-A' '--activate'  - tries to raise the client before spawning / unhiding
+   -- activate is there to make the command more deterministic
+   -- with that argument, you have a very good chance of raising a terminal in 1 keystroke
+   self.tdrop_floating_args =
+      "--monitor-aware --auto-detect-wm --width 100% --height 100% --pointer-monitor-detection -A"
+   self.tdrop_tiling_args = "--monitor-aware --pointer-monitor-detection -A"
+   self.tdrop_terminal_main_command = util.build_cmd(
+      "tdrop", "--name", self.tdrop_terminal_main_wm_name, self.tdrop_tiling_args, self.terminal)
+   self.tdrop_terminal_volatile_command = util.build_cmd(
+      "tdrop","--name", self.tdrop_terminal_main_wm_name, self.tdrop_tiling_args, self.terminal)
+   self.tdrop_terminal_main_auto_hide = false
    self.rofi_global_args = "-show-icons -width 30 -font 'MesloLGS NF 16'"
    self.rofi_drun_command = util.build_cmd("rofi", self.rofi_global_args, "-show drun")
    self.flameshot_folder = os.getenv("HOME").."/pictures/screenshots"
@@ -74,6 +90,7 @@ function database:new()
    self.notification_font_size  = 12
    self.notification_font       =
       self.notification_font_name.." "..tostring(self.notification_font_size)
+   self.cache = {}
    self.focus_blacklist =
       {
          "UnrealEditor",
