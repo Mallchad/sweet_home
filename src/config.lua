@@ -37,6 +37,10 @@ function set_tags_all(client)
    local screen_tags = client.screen.tags
    client:tags(screen_tags)
 end
+function kill_client_hard(doomed_client)
+   local doomed_pid = tostring(doomed_client.pid)
+   awful.spawn.easy_async("kill -KILL "..doomed_pid, utility.stub)
+end
 local function xprop()
    if dat.xprop_lock ~= true then
       dat.xprop_lock = true
@@ -243,7 +247,9 @@ local clientkeys = gears.table.join(
    awful.key({ dat.modkey }, "g",
       set_tags_all,
       {description = "put client on all tags", group = "client"}),
-   awful.key({dat.alt_l}, "F4", function (c) c:kill()                         end,
+   awful.key({dat.alt_l}, "F4", function (focused_client) focused_client:kill() end,
+      {description = "close", group = "client"}),
+   awful.key({dat.modkey}, "F4", kill_client_hard,
       {description = "close", group = "client"}),
    awful.key({ dat.modkey, "Control" }, "space",  awful.client.floating.toggle                     ,
       {description = "toggle floating", group = "client"}),

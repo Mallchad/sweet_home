@@ -96,4 +96,9 @@ function utility.hide_client_callback(sig_client)
    _G.database.tdrop_terminal_main_auto_hide = false
    sig_client.metadata.auto_hide = false
 end
+-- A function that does nothing but can eat arguments and satify integer returns
+function utility.stub(...)
+   local _ = ...                -- silence unused variable warnings
+   return 42
+end
 return utility
