@@ -30,6 +30,10 @@ awful.layout.layouts =
       -- awful.layout.suit.fair,
       -- awful.layout.suit.spiral.dwindle
    }
+function set_tags_all(client)
+   local screen_tags = client.screen.tags
+   client:tags(screen_tags)
+end
 local function xprop()
    if dat.xprop_lock ~= true then
       dat.xprop_lock = true
@@ -243,6 +247,9 @@ local clientkeys = gears.table.join(
             c.border_width = 0 end
       end,
       {description = "toggle fullscreen", group = "client"}),
+   awful.key({ dat.modkey }, "g",
+      set_tags_all,
+      {description = "put client on all tags", group = "client"}),
    awful.key({dat.alt_l}, "F4", function (c) c:kill()                         end,
       {description = "close", group = "client"}),
    awful.key({ dat.modkey, "Control" }, "space",  awful.client.floating.toggle                     ,
@@ -279,7 +286,50 @@ local clientkeys = gears.table.join(
       end ,
       {description = "(un)maximize horizontally", group = "client"})
 )
-
+globalkeys = gears.table.join(
+   globalkeys,
+   -- View tag only
+   awful.key({ dat.modkey }, "\\",
+      function (_)
+         screen.connect_for_each_screen(
+            function (x_screen)
+               local tag = x_screen.tags[1]
+               tag:view_only()
+         end)
+      end,
+      {description = "view tag #1", group = "tag"}
+   ),
+   awful.key({ dat.modkey }, "z",
+   function (_)
+         screen.connect_for_each_screen(
+            function (x_screen)
+               local tag = x_screen.tags[2]
+               tag:view_only()
+         end)
+      end,
+      {description = "view tag #2", group = "tag"}
+   ),
+   awful.key({ dat.modkey }, "x",
+      function (_)
+         screen.connect_for_each_screen(
+            function (x_screen)
+               local tag = x_screen.tags[3]
+               tag:view_only()
+         end)
+      end,
+      {description = "view tag #3", group = "tag"}
+   ),
+   awful.key({ dat.modkey }, "c",
+      function (_)
+         screen.connect_for_each_screen(
+            function (x_screen)
+               local tag = x_screen.tags[4]
+               tag:view_only()
+         end)
+      end,
+      {description = "view tag #4", group = "tag"}
+   )
+)
 -- Bind all key numbers to tags.
 -- Be careful: we use keycodes to make it work on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
