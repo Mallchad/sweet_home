@@ -22,9 +22,13 @@ local database =
       tdrop_terminal_main_auto_hide = nil,
       rofi_global_args = nil,
       rofi_drun_command = nil,
+      rofi_window_command = nil,
       flameshot_folder = nil,
       flameshot_gui_comamnd = nil,
       flameshot_screencap_command = nil,
+      media_playpause_command = nil,
+      media_next_command = nil,
+      media_previous_command = nil,
       border_width = nil,
       border_color = nil,
       widget_background_color = nil,
@@ -72,9 +76,13 @@ function database:new()
    self.tdrop_terminal_main_auto_hide = false
    self.rofi_global_args = "-show-icons -width 30 -font 'MesloLGS NF 16'"
    self.rofi_drun_command = util.build_cmd("rofi", self.rofi_global_args, "-show drun")
+   self.rofi_window_command = util.build_cmd("rofi", self.rofi_global_args, "-show window")
    self.flameshot_folder = os.getenv("HOME").."/pictures/screenshots"
    self.flameshot_gui_command = "flameshot gui  --path "..self.flameshot_folder
    self.flameshot_screencap_command = "flameshot screen --clipboard --path "..self.flameshot_folder
+   self.media_playpause_command = "playerctl play-pause"
+   self.media_next_command = "playerctl next"
+   self.media_previous_command = "playerctl previous"
    if (gears.filesystem.is_dir(self.flameshot_folder) == false) then
       self.screenshot_folder = nil
       debug.silent_fail("'screenshot_folder' directory could not be found")

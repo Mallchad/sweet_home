@@ -1,13 +1,13 @@
 -- Standard awesome library
 -- Silence undeclared variable warnings, since they are loaded by awesome
-_G.awesome = _G.awesome
-_G.root = _G.root
-_G.client = _G.client
+local awesome   = _G.awesome
+local root      = _G.root
+local client    = _G.client
+local screen    = _G.screen
 -- Load Awesome Libraries
 local gears     = require("gears")
 local gtable    = require("gears.table")
 local awful     = require("awful")
-local screen    = require("awful.screen")
 require("awful.autofocus")
 -- Widget and layout library
 local wibox = require("wibox")
@@ -25,6 +25,7 @@ local utility = require("src/utility")
 _G.database = require("src/database")
 local dat = _G.database
 local debug = require("src/debug")
+
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts =
    {
@@ -33,13 +34,37 @@ awful.layout.layouts =
       -- awful.layout.suit.fair,
       -- awful.layout.suit.spiral.dwindle
    }
-function set_tags_all(client)
-   local screen_tags = client.screen.tags
-   client:tags(screen_tags)
+local function set_tags_all(q_client)
+   local screen_tags = q_client.screen.tags
+   q_client:tags(screen_tags)
 end
-function kill_client_hard(doomed_client)
+local function kill_client_hard(doomed_client)
    local doomed_pid = tostring(doomed_client.pid)
    awful.spawn.easy_async("kill -KILL "..doomed_pid, utility.stub)
+end
+local function focus_cycle_screen(include_primary)
+   include_primary = include_primary or false
+   awful.screen.focus_relative(1)
+   if screen.count() <= 2 and include_primary then
+      -- Jump straight to the next non-primary screen
+      for _, x_screen in screen:screen() do
+         if x_screen.index ~= screen.primary.index then
+            screen.focus(x_screen)
+         end
+      end
+   elseif include_primary == false and
+      -- Cycle through screens
+      awful.screen.focused().index == screen.primary.index then
+      awful.screen.focus_relative(1)
+   end
+end
+local function focus_primary_screen()
+   local primary_screen = screen.primary or nil
+   if primary_screen then
+      awful.screen.focus(primary_screen)
+   else
+      debug.silent_fail("Failed to find a primary screen")
+   end
 end
 local function xprop()
    if dat.xprop_lock ~= true then
@@ -91,10 +116,6 @@ local mymainmenu = awful.menu({
          { "open terminal", dat.terminal }
       }
 })
-local mylauncher = awful.widget.launcher({
-      image = beautiful.awesome_icon,
-      menu = mymainmenu
-})
 awful.screen.connect_for_each_screen(function(s)
       -- Each screen has its own tag table.
       awful.tag.add("Graphically Intensive", {
@@ -145,7 +166,7 @@ root.buttons(gears.table.join(
 -- }}}
 -- {{{ Key bindings
 local globalkeys = gears.table.join(
-   awful.key({ dat.modkey,           }, "s",      hotkeys_popup.show_help,
+   awful.key({ dat.modkey }, "/",      hotkeys_popup.show_help,
       {description="show help", group="awesome"}),
    awful.key({ dat.modkey,           }, "Escape", awful.tag.history.restore,
       {description = "go back", group = "tag"}),
@@ -161,18 +182,15 @@ local globalkeys = gears.table.join(
       end,
       {description = "focus previous by index", group = "client"}
    ),
-   awful.key({ dat.modkey,           }, "w", function () mymainmenu:show() end,
-      {description = "show main menu", group = "awesome"}),
-
    -- Layout manipulation
    awful.key({ dat.modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end,
       {description = "swap with next client by index", group = "client"}),
    awful.key({ dat.modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end,
       {description = "swap with previous client by index", group = "client"}),
-   awful.key({ dat.modkey, "Control" }, "j", function () awful.screen.focus_relative( 1) end,
-      {description = "focus the next screen", group = "screen"}),
-   awful.key({ dat.modkey, "Control" }, "k", function () awful.screen.focus_relative(-1) end,
-      {description = "focus the previous screen", group = "screen"}),
+   awful.key({ dat.modkey }, "a", focus_primary_screen,
+      {description = "focus the primary screen", group = "screen"}),
+   awful.key({ dat.modkey }, "d", focus_cycle_screen,
+      {description = "cycle focus through non-priamry screens", group = "screen"}),
    awful.key({ dat.modkey,           }, "u", awful.client.urgent.jumpto,
       {description = "jump to urgent client", group = "client"}),
    awful.key({ dat.modkey,           }, "Tab",
@@ -183,6 +201,28 @@ local globalkeys = gears.table.join(
          end
       end,
       {description = "go back", group = "client"}),
+   awful.key({ dat.modkey, "Control" }, "n",
+      function ()
+         local c = awful.client.restore()
+         -- Focus restored client
+         if c then
+            c:emit_signal(
+               "request::activate", "key.unminimize", {raise = true}
+            )
+         end
+      end,
+      {description = "restore minimized", group = "client"}),
+   awful.key({ dat.modkey, "Shift" }, "w",
+      function ()
+         local c = awful.client.restore()
+         -- Focus restored client
+         if c then
+            c:emit_signal(
+               "request::activate", "key.unminimize", {raise = true}
+            )
+         end
+      end,
+      {description = "restore minimized", group = "client"}),
    -- Standard Programs
    awful.key({ dat.modkey}, "Return",
       utility.terminal_call(dat.tdrop_terminal_main_command),
@@ -198,43 +238,34 @@ local globalkeys = gears.table.join(
    awful.key({}, keysym.prtsc, flameshot.invoke_screen,
       {description = "take screenshot of current screen"}),
    -- Window Management
-   awful.key({ dat.modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)          end,
+   awful.key({ dat.modkey }, "-",  function () awful.tag.incmwfact(-0.05) end,
       {description = "decrease master width factor", group = "layout"}),
-   awful.key({ dat.modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1, nil, true) end,
-      {description = "increase the number of master clients", group = "layout"}),
-   awful.key({ dat.modkey, "Shift"   }, "=",     function () awful.tag.incnmaster(-1, nil, true) end,
-      {description = "decrease the number of master clients", group = "layout"}),
-   awful.key({ dat.modkey }, "space", function () awful.layout.set(awful.layout.suit.tile) end,
-      {description = "select next", group = "layout"}),
-   awful.key({ dat.modkey, "Shift" }, "space", function () awful.layout.set(awful.layout.suit.floating) end,
-      {description = "select previous", group = "layout"}),
-   awful.key({ dat.modkey, "Control" }, "n",
-      function ()
-         local c = awful.client.restore()
-         -- Focus restored client
-         if c then
-            c:emit_signal(
-               "request::activate", "key.unminimize", {raise = true}
-            )
-         end
-      end,
-      {description = "restore minimized", group = "client"}),
-   -- Menubar
-   awful.key({ dat.modkey }, "p", function() awful.spawn(dat.rofi_drun_command) end,
-      {description = "show rofi desktop menu", group = "launcher"}),
-   awful.key({ dat.modkey }, "b",
-      function ()
-         local myscreen = awful.screen.focused()
-         myscreen.mywibox.visible = not myscreen.mywibox.visible
-      end,
-      {description = "toggle statusbar"}
-   )
-   -- awful.key({modkey}, "y", function() awful.spawn("xdotool key ctrl+b o") end
-   -- )
+   awful.key({ dat.modkey }, "=", function () awful.tag.incmwfact(10.05) end,
+      {description = "decrease number of master clients", group = "layout"}),
+   awful.key({ dat.modkey, "Shift" }, "-",  function () awful.tag.incnmaster( 1, nil, true) end,
+      {description = "increase number of master clients", group = "layout"}),
+   awful.key({ dat.modkey, "Shift" }, "=",     function () awful.tag.incnmaster(-1, nil, true) end,
+      {description = "increase number of master clients", group = "layout"}),
+   awful.key({ dat.modkey }, "q", function () awful.layout.set(awful.layout.suit.tile) end,
+      {description = "set the layout tag to tiling", group = "layout"}),
+awful.key({ dat.modkey }, "e", function () awful.layout.set(awful.layout.suit.floating) end,
+   {description = "set layout floating", group = "layout"}),
+awful.key({ dat.modkey }, "p", function() awful.spawn(dat.rofi_drun_command) end,
+   {description = "show rofi app menu", group = "launcher"}),
+awful.key({ dat.modkey }, "s", function() awful.spawn(dat.rofi_drun_command) end,
+   {description = "show rofi app menu (Windows alias)", group = "launcher"}),
+awful.key({ dat.modkey }, "space", utility.terminal_call(dat.rofi_window_command),
+   {description = "show rofi window menu", group = "launcher"}),
+awful.key({ dat.modkey }, "r", utility.terminal_call(dat.media_playpause_command),
+   {description = "playerctl play/pause media", group = "media"}),
+awful.key({ dat.modkey }, "y", utility.terminal_call(dat.media_previous_command),
+   {description = "playerctl previous track", group = "media"}),
+awful.key({ dat.modkey }, "u", utility.terminal_call(dat.media_next_command),
+   {description = "playerctl next track", group = "media"})
 )
 
 local clientkeys = gears.table.join(
-   awful.key({ dat.modkey,           }, "f",
+   awful.key({ dat.modkey }, "f",
       function (c)
          c.fullscreen = not c.fullscreen
          c:raise()
@@ -244,29 +275,43 @@ local clientkeys = gears.table.join(
             c.border_width = 0 end
       end,
       {description = "toggle fullscreen", group = "client"}),
-   awful.key({ dat.modkey }, "g",
-      set_tags_all,
+   awful.key({ dat.modkey }, "g", set_tags_all,
       {description = "put client on all tags", group = "client"}),
    awful.key({dat.alt_l}, "F4", function (focused_client) focused_client:kill() end,
       {description = "close", group = "client"}),
    awful.key({dat.modkey}, "F4", kill_client_hard,
       {description = "close", group = "client"}),
-   awful.key({ dat.modkey, "Control" }, "space",  awful.client.floating.toggle                     ,
-      {description = "toggle floating", group = "client"}),
-   awful.key({ dat.modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end,
+   awful.key({ dat.modkey, "Shift" }, "q",
+      function (focused_client) focused_client.floating = false end,
+      {description = "tile client", group = "client"}),
+   awful.key({ dat.modkey, "Shift" }, "e",
+      function (focused_client) focused_client.floating = true end,
+      {description = "float client", group = "client"}),
+   awful.key({ dat.modkey, "Control" }, "Return",
+      function (c) c:swap(awful.client.getmaster()) end,
       {description = "move to master", group = "client"}),
-   awful.key({ dat.modkey,           }, "o",      function (c) c:move_to_screen()               end,
+   awful.key({ dat.modkey }, "o",
+      function (c) c:move_to_screen() end,
       {description = "move to screen", group = "client"}),
-   awful.key({ dat.modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
+   awful.key({ dat.modkey }, "t",
+      function (c) c.ontop = not c.ontop end,
       {description = "toggle keep on top", group = "client"}),
-   awful.key({ dat.modkey,           }, "n",
+   awful.key({ dat.modkey }, "n",
+      function (c)
+         -- The client currently has the input focus, so it cannot be
+         -- minimized, since minimized clients can't have the focus.
+      c.minimized = true
+   end ,
+   {description = "minimize", group = "client"}),
+
+   awful.key({ dat.modkey }, "w",
       function (c)
          -- The client currently has the input focus, so it cannot be
          -- minimized, since minimized clients can't have the focus.
          c.minimized = true
-      end ,
+      end,
       {description = "minimize", group = "client"}),
-   awful.key({ dat.modkey,           }, "m",
+   awful.key({ dat.modkey }, "m",
       function (c)
          c.maximized = not c.maximized
          c:raise()
@@ -290,7 +335,7 @@ globalkeys = gears.table.join(
    -- View tag only
    awful.key({ dat.modkey }, "\\",
       function (_)
-         screen.connect_for_each_screen(
+         awful.screen.connect_for_each_screen(
             function (x_screen)
                local tag = x_screen.tags[1]
                tag:view_only()
@@ -300,8 +345,8 @@ globalkeys = gears.table.join(
    ),
    awful.key({ dat.modkey }, "z",
    function (_)
-         screen.connect_for_each_screen(
-            function (x_screen)
+      awful.screen.connect_for_each_screen(
+         function (x_screen)
                local tag = x_screen.tags[2]
                tag:view_only()
          end)
@@ -310,7 +355,7 @@ globalkeys = gears.table.join(
    ),
    awful.key({ dat.modkey }, "x",
       function (_)
-         screen.connect_for_each_screen(
+         awful.screen.connect_for_each_screen(
             function (x_screen)
                local tag = x_screen.tags[3]
                tag:view_only()
@@ -320,7 +365,7 @@ globalkeys = gears.table.join(
    ),
    awful.key({ dat.modkey }, "c",
       function (_)
-         screen.connect_for_each_screen(
+         awful.screen.connect_for_each_screen(
             function (x_screen)
                local tag = x_screen.tags[4]
                tag:view_only()
@@ -338,8 +383,8 @@ for i = 1, 9 do
       -- View tag only.
       awful.key({ dat.modkey }, "#" .. i + 9,
          function ()
-            local screen = awful.screen.focused()
-            local tag = screen.tags[i]
+            local q_screen = awful.screen.focused()
+            local tag = q_screen.tags[i]
             if tag then
                tag:view_only()
             end
@@ -348,8 +393,8 @@ for i = 1, 9 do
       -- Toggle tag display.
       awful.key({ dat.modkey, "Control" }, "#" .. i + 9,
          function ()
-            local screen = awful.screen.focused()
-            local tag = screen.tags[i]
+            local q_screen = awful.screen.focused()
+            local tag = q_screen.tags[i]
             if tag then
                awful.tag.viewtoggle(tag)
             end
@@ -398,16 +443,16 @@ local clientbuttons = gears.table.join(
 -- Set keys
 root.keys(globalkeys)
 -- Prevnt focus stealing from new clients
-awful.ewmh.add_activate_filter(function(client)
-      local matched = gears.table.hasitem(dat.focus_blacklist, client.name) or
-         gears.table.hasitem(dat.focus_blacklist, client.class)
+awful.ewmh.add_activate_filter(function(q_client)
+      local matched = gears.table.hasitem(dat.focus_blacklist, q_client.name) or
+         gears.table.hasitem(dat.focus_blacklist, q_client.class)
       if matched then
          return false
       end
 end, "ewmh")
-awful.ewmh.add_activate_filter(function(client)
-      local matched = gears.table.hasitem(dat.focus_blacklist, client.name) or
-         gears.table.hasitem(dat.focus_blacklist, client.class)
+awful.ewmh.add_activate_filter(function(q_client)
+      local matched = gears.table.hasitem(dat.focus_blacklist, q_client.name) or
+         gears.table.hasitem(dat.focus_blacklist, q_client.class)
       if matched then return false
       end
 end, "rules")
@@ -495,7 +540,7 @@ awful.rules.rules = {
 }
 -- Signals
 -- Signal function to execute when a new client appears.
-function new_client_setup(new_client)
+local function new_client_setup(new_client)
    -- Apply some default variables metadata
    new_client.metadata = {}
    -- Set the windows at the slave,
@@ -521,7 +566,7 @@ function new_client_setup(new_client)
       end
    end
 end
-function focused_client_setup(focused_client)
+local function focused_client_setup(focused_client)
    if focused_client.metadata == nil then
       focused_client.metadata = {}
    end

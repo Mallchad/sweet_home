@@ -13,6 +13,7 @@ local naughty = require("naughty")
 -- User Modules
 require("src/config")
 local dat = require("src/database")
+local debug = require("src/debug")
 TESTING = os.getenv("AWESOME_TEST")
 if TESTING then
    pcall(function () require("tests/test") end)
