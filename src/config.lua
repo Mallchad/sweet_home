@@ -578,8 +578,15 @@ local function focused_client_setup(focused_client)
       focused_client.metadata.auto_hide = true
    end
 end
+local function raised_client_update(raised_client)
+   if raised_client.name == dat.tdrop_terminal_main_wm_name then
+      -- A volatile terminal has been raised
+      client.focus = raised_client
+   end
+end
 client.connect_signal("manage", new_client_setup)
 client.connect_signal("focus", focused_client_setup)
+client.connect_signal("raised", raised_client_update)
 -- Aggressive rule templates
 -- Switch to viewing accessible tags
 -- | Final Startup Setup |
