@@ -74,7 +74,7 @@ function database:new()
    self.tdrop_terminal_volatile_command = util.build_cmd(
       "tdrop","--name", self.tdrop_terminal_main_wm_name, self.tdrop_tiling_args, self.terminal)
    self.tdrop_terminal_main_auto_hide = false
-   self.rofi_global_args = "-show-icons -width 30 -font 'MesloLGS NF 16'"
+   self.rofi_global_args = "-show-icons -width 30 -font 'MesloLGS NF 16' -theme-str 'window {width: 30%;}'"
    self.rofi_drun_command = util.build_cmd("rofi", self.rofi_global_args, "-show drun")
    self.rofi_window_command = util.build_cmd("rofi", self.rofi_global_args, "-show window")
    self.flameshot_folder = os.getenv("HOME").."/pictures/screenshots"
