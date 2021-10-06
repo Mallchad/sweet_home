@@ -291,9 +291,9 @@ local clientkeys = gears.table.join(
       function (c)
          -- The client currently has the input focus, so it cannot be
          -- minimized, since minimized clients can't have the focus.
-      c.minimized = true
-   end ,
-   {description = "minimize", group = "client"}),
+         c.minimized = true
+      end ,
+      {description = "minimize", group = "client"}),
 
    awful.key({ dat.modkey }, "w",
       function (c)
@@ -335,9 +335,9 @@ globalkeys = gears.table.join(
       {description = "visit tag #1 on all screens", group = "tag"}
    ),
    awful.key({ dat.modkey }, "z",
-   function (_)
-      awful.screen.connect_for_each_screen(
-         function (x_screen)
+      function (_)
+         awful.screen.connect_for_each_screen(
+            function (x_screen)
                local tag = x_screen.tags[2]
                tag:view_only()
          end)
