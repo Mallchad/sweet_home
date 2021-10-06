@@ -332,7 +332,7 @@ globalkeys = gears.table.join(
                tag:view_only()
          end)
       end,
-      {description = "view tag #1", group = "tag"}
+      {description = "visit tag #1 on all screens", group = "tag"}
    ),
    awful.key({ dat.modkey }, "z",
    function (_)
