@@ -102,20 +102,8 @@ local function tdrop_terminal_volatile()
    utility.terminal_call(dat.tdrop_terminal_volatile_command)()
    _G.database.tdrop_terminal_main_auto_hide = true
 end
--- Create a launcher widget and a main menu
-local myawesomemenu = {
-   { "hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end },
-   { "manual", dat.terminal .. " -e man awesome" },
-   { "edit config", dat.editor_command .. " " .. awesome.conffile },
-   { "restart", awesome.restart },
-   { "quit", function() awesome.quit() end },
-}
-local mymainmenu = awful.menu({
-      items = {
-         { "awesome", myawesomemenu, beautiful.awesome_icon },
-         { "open terminal", dat.terminal }
-      }
-})
+
+-- Setup Tag tables
 awful.screen.connect_for_each_screen(function(s)
       -- Each screen has its own tag table.
       awful.tag.add("Graphically Intensive", {
@@ -159,9 +147,8 @@ end)
 -- }}}
 -- {{{ Mouse bindings
 root.buttons(gears.table.join(
-                awful.button({ }, 3, function () mymainmenu:toggle() end),
-                awful.button({ }, 4, awful.tag.viewnext),
-                awful.button({ }, 5, awful.tag.viewprev)
+                -- awful.button({ }, 4, awful.tag.viewnext),
+                -- awful.button({ }, 5, awful.tag.viewprev)
 ))
 -- }}}
 -- {{{ Key bindings
