@@ -536,6 +536,17 @@ awful.rules.rules = {
    -- { rule = { class = "Firefox" },
    --   properties = { screen = 1, tag = "2" } },
 }
+
+-- Theme Config
+naughty.config.defaults.fg              = dat.widget_fg_color
+naughty.config.defaults.bg              = dat.widget_bg_color
+naughty.config.defaults.font            = dat.notification_font
+naughty.config.defaults.border_width    = dat.border_width
+naughty.config.defaults.border_width    = dat.border_width
+
+-- Notification Config
+naughty.config.defaults.timeout         = dat.border_width
+
 -- Signals
 -- Signal function to execute when a new client appears.
 local function new_client_setup(new_client)

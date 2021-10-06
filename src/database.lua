@@ -31,10 +31,14 @@ local database =
       media_previous_command = nil,
       border_width = nil,
       border_color = nil,
+      widget_fg_color = nil,
+      widget_bg_color = nil,
+      widget_border_width = nil,
       widget_background_color = nil,
       notification_font_name = nil,
       notification_font_size = nil,
       notification_font = nil,
+      notification_timeout = nil,
       cache = {},
       focus_blacklist = {},
       autostart_list = {},
@@ -93,11 +97,15 @@ function database:new()
    end
    self.border_width     = 0
    self.border_color     = "#11111100"
-   self.widget_background_color = "#12171eEA"
+   self.widget_fg_color = "#EEEEEE"
+   self.widget_bg_color = "#12171eEA"
+   self.widget_border_width = 0
+   self.widget_background_color = self.widget_bg_color -- deprecreated
    self.notification_font_name  = "MesloLGS NF"
    self.notification_font_size  = 12
    self.notification_font       =
       self.notification_font_name.." "..tostring(self.notification_font_size)
+   self.notification_timeout    = 0               -- 0 is no-timeout
    self.cache = {}
    self.focus_blacklist =
       {
