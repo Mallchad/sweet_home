@@ -522,7 +522,16 @@ awful.rules.rules = {
          sticky = true,
          -- Prevent plasmashell widgets filling the screen
          floating = true,
-   }}
+      }
+   },
+   {
+      rule = {class = "krunner"},
+      properties = {
+         sticky = true,
+         -- Prevent krunner widgets filling the screen
+         floating = true,
+      }
+   }
    -- Set Firefox to always map on the tag named "2" on screen 1.
    -- { rule = { class = "Firefox" },
    --   properties = { screen = 1, tag = "2" } },
