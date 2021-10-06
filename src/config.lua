@@ -239,18 +239,20 @@ local globalkeys = gears.table.join(
    awful.key({ dat.modkey, "Shift" }, "e",
       function () awful.layout.set(awful.layout.suit.floating) end,
       {description = "set layout floating", group = "layout"}),
-awful.key({ dat.modkey }, "p", function() awful.spawn(dat.rofi_drun_command) end,
-   {description = "show rofi app menu", group = "launcher"}),
-awful.key({ dat.modkey }, "s", function() awful.spawn(dat.rofi_drun_command) end,
-   {description = "show rofi app menu (Windows alias)", group = "launcher"}),
-awful.key({ dat.modkey }, "space", utility.terminal_call(dat.rofi_window_command),
-   {description = "show rofi window menu", group = "launcher"}),
-awful.key({ dat.modkey }, "r", utility.terminal_call(dat.media_playpause_command),
-   {description = "playerctl play/pause media", group = "media"}),
-awful.key({ dat.modkey }, "y", utility.terminal_call(dat.media_previous_command),
-   {description = "playerctl previous track", group = "media"}),
-awful.key({ dat.modkey }, "u", utility.terminal_call(dat.media_next_command),
-   {description = "playerctl next track", group = "media"})
+   awful.key({dat.modkey}, "#", xprop,
+      { description = "Check a window's properties with xprop"}),
+   awful.key({ dat.modkey }, "p", function() awful.spawn(dat.rofi_drun_command) end,
+      {description = "show rofi app menu", group = "launcher"}),
+   awful.key({ dat.modkey }, "s", function() awful.spawn(dat.rofi_drun_command) end,
+      {description = "show rofi app menu (Windows alias)", group = "launcher"}),
+   awful.key({ dat.modkey }, "space", utility.terminal_call(dat.rofi_window_command),
+      {description = "show rofi window menu", group = "launcher"}),
+   awful.key({ dat.modkey }, "r", utility.terminal_call(dat.media_playpause_command),
+      {description = "playerctl play/pause media", group = "media"}),
+   awful.key({ dat.modkey }, "y", utility.terminal_call(dat.media_previous_command),
+      {description = "playerctl previous track", group = "media"}),
+   awful.key({ dat.modkey }, "u", utility.terminal_call(dat.media_next_command),
+      {description = "playerctl next track", group = "media"})
 )
 
 local clientkeys = gears.table.join(
@@ -410,8 +412,6 @@ for i = 1, 9 do
                end
             end
          end,
-      awful.key({dat.modkey}, "#", xprop,
-         { description = "Check a window's properties with xprop"})
          {description = "toggle focused client on tag #" .. i, group = "tag"})
    )
 end
