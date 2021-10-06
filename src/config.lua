@@ -353,7 +353,7 @@ globalkeys = gears.table.join(
                tag:view_only()
          end)
       end,
-      {description = "view tag #2", group = "tag"}
+      {description = "visit tag #2 on all screens", group = "tag"}
    ),
    awful.key({ dat.modkey }, "x",
       function (_)
@@ -363,7 +363,7 @@ globalkeys = gears.table.join(
                tag:view_only()
          end)
       end,
-      {description = "view tag #3", group = "tag"}
+      {description = "visit tag #3 on all screens", group = "tag"}
    ),
    awful.key({ dat.modkey }, "c",
       function (_)
@@ -373,7 +373,7 @@ globalkeys = gears.table.join(
                tag:view_only()
          end)
       end,
-      {description = "view tag #4", group = "tag"}
+      {description = "visit tag #4 on all screens", group = "tag"}
    )
 )
 -- Bind all key numbers to tags.
@@ -423,9 +423,9 @@ for i = 1, 9 do
                end
             end
          end,
-         {description = "toggle focused client on tag #" .. i, group = "tag"}),
       awful.key({dat.modkey}, "#", xprop,
          { description = "Check a window's properties with xprop"})
+         {description = "toggle focused client on tag #" .. i, group = "tag"})
    )
 end
 
