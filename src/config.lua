@@ -218,8 +218,6 @@ local globalkeys = gears.table.join(
       {description = "open an auto-closing terminal", group = "launcher"}),
    awful.key({ dat.modkey, "Control" }, "r", awesome.restart,
       {description = "reload awesome", group = "awesome"}),
-   awful.key({ dat.modkey, "Shift"   }, "q", awesome.quit,
-      {description = "quit awesome", group = "awesome"}),
    awful.key({"Shift"}, keysym.prtsc, flameshot.invoke_gui,
       {description = "open screenshot editor"}),
    awful.key({}, keysym.prtsc, flameshot.invoke_screen,
