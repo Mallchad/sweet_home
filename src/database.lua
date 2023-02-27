@@ -20,6 +20,8 @@ local database =
       tdrop_terminal_main_command = nil,
       tdrop_terminal_volatile_command = nil,
       tdrop_terminal_main_auto_hide = nil,
+      calculator_command = nil,
+      calculator_tdrop_command = nil,
       rofi_global_args = nil,
       rofi_drun_command = nil,
       rofi_window_command = nil,
@@ -72,12 +74,16 @@ function database:new()
    -- with that argument, you have a very good chance of raising a terminal in 1 keystroke
    self.tdrop_floating_args =
       "--monitor-aware --auto-detect-wm --width 100% --height 100% --pointer-monitor-detection -A"
+   self.tdrop_quake_args =
+      "--monitor-aware --auto-detect-wm --width 100% --height 30% --pointer-monitor-detection -A"
    self.tdrop_tiling_args = "--monitor-aware --pointer-monitor-detection -A"
    self.tdrop_terminal_main_command = util.build_cmd(
       "tdrop", "--name", self.tdrop_terminal_main_wm_name, self.tdrop_tiling_args, self.terminal)
    self.tdrop_terminal_volatile_command = util.build_cmd(
       "tdrop","--name", self.tdrop_terminal_main_wm_name, self.tdrop_tiling_args, self.terminal)
    self.tdrop_terminal_main_auto_hide = false
+   self.calculator_command = "qalculate-qt"
+   self.calculator_tdrop_command = string.format("tdrop %s -- %s", self.tdrop_quake_args, self.calculator_command)
    self.rofi_global_args = "-show-icons -width 30 -font 'MesloLGS NF 16' -theme-str 'window {width: 30%;}'"
    self.rofi_drun_command = util.build_cmd("rofi", self.rofi_global_args, "-show drun")
    self.rofi_window_command = util.build_cmd("rofi", self.rofi_global_args, "-show window")
