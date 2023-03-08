@@ -65,6 +65,7 @@ function database:new()
    self.terminal = os.getenv("TERMINAL") or "alacritty"
    self.editor = os.getenv("EDITOR") or "vim"
    self.editor_command = self.terminal.." -e "..self.editor
+
    self.tdrop_terminal_main_wm_name = "tdrop_main_"..self.terminal
    -- '--monitor-aware'  - allows for setting attributes as a percentage of monitor stats
    -- '--auto-detect-wm' - allows for neccecary admin to set custom window properties
@@ -73,17 +74,20 @@ function database:new()
    -- activate is there to make the command more deterministic
    -- with that argument, you have a very good chance of raising a terminal in 1 keystroke
    self.tdrop_floating_args =
-      "--monitor-aware --auto-detect-wm --width 100% --height 100% --pointer-monitor-detection -A"
+      "--monitor-aware --auto-detect-wm --width 100% --height 100% --pointer-monitor-detection --activate"
    self.tdrop_quake_args =
-      "--monitor-aware --auto-detect-wm --width 100% --height 30% --pointer-monitor-detection -A"
-   self.tdrop_tiling_args = "--monitor-aware --pointer-monitor-detection -A"
+      "--monitor-aware --auto-detect-wm --width 100% --height 30% --pointer-monitor-detection --activate"
+   self.tdrop_corner_args =
+      "--monitor-aware --auto-detect-wm --width 40% --height 50% --x-offset 60% --pointer-monitor-detection --activate"
+   self.tdrop_tiling_args = "--monitor-aware --pointer-monitor-detection -A"    -- For some reason --activate doesn't work without -a
    self.tdrop_terminal_main_command = util.build_cmd(
       "tdrop", "--name", self.tdrop_terminal_main_wm_name, self.tdrop_tiling_args, self.terminal)
    self.tdrop_terminal_volatile_command = util.build_cmd(
       "tdrop","--name", self.tdrop_terminal_main_wm_name, self.tdrop_tiling_args, self.terminal)
    self.tdrop_terminal_main_auto_hide = false
-   self.calculator_command = "qalculate-qt"
-   self.calculator_tdrop_command = string.format("tdrop %s -- %s", self.tdrop_quake_args, self.calculator_command)
+
+   self.calculator_command = "qalculate-gtk"
+   self.calculator_tdrop_command = string.format("tdrop %s -- %s", self.tdrop_corner_args, self.calculator_command)
    self.rofi_global_args = "-show-icons -width 30 -font 'MesloLGS NF 16' -theme-str 'window {width: 30%;}'"
    self.rofi_drun_command = util.build_cmd("rofi", self.rofi_global_args, "-show drun")
    self.rofi_window_command = util.build_cmd("rofi", self.rofi_global_args, "-show window")
