@@ -115,7 +115,7 @@ function database:new()
    self.notification_font_size  = 12
    self.notification_font       =
       self.notification_font_name.." "..tostring(self.notification_font_size)
-   self.notification_timeout    = 0               -- 0 is no-timeout
+   self.notification_timeout    = 5               -- 0 is no-timeout
    self.cache = {}
    self.focus_blacklist =
       {

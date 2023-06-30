@@ -546,7 +546,7 @@ naughty.config.defaults.border_width    = dat.border_width
 naughty.config.defaults.border_width    = dat.border_width
 
 -- Notification Config
-naughty.config.defaults.timeout         = dat.border_width
+naughty.config.defaults.timeout         = dat.notification_timeout
 
 -- Signals
 -- Signal function to execute when a new client appears.
