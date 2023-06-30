@@ -532,6 +532,14 @@ awful.rules.rules = {
          -- Prevent krunner widgets filling the screen
          floating = true,
       }
+   },
+   {
+      rule = { class = "UE4Editor*" },
+      properties =
+         {
+            tag = "Graphically Intensive",
+            focus = false
+         }
    }
    -- Set Firefox to always map on the tag named "2" on screen 1.
    -- { rule = { class = "Firefox" },
