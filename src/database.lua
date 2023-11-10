@@ -90,7 +90,7 @@ function database:new()
    self.calculator_tdrop_command = string.format("tdrop %s -- %s", self.tdrop_corner_args, self.calculator_command)
    self.rofi_global_args = "-show-icons -width 30 -font 'MesloLGS NF 16' -theme-str 'window {width: 30%;}'"
    self.rofi_drun_command = util.build_cmd("rofi", self.rofi_global_args, "-show drun")
-   self.rofi_window_command = util.build_cmd("rofi", self.rofi_global_args, "-show window")
+   self.rofi_window_command = util.build_cmd("rofi", self.rofi_global_args, "-theme-str 'window {width: 90%;}' -show window")
    self.flameshot_folder = os.getenv("HOME").."/pictures/screenshots"
    self.flameshot_gui_command = "flameshot gui  --path "..self.flameshot_folder
    self.flameshot_screencap_command = "flameshot screen --clipboard --path "..self.flameshot_folder
